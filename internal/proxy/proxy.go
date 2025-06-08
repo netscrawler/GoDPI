@@ -247,14 +247,8 @@ func Run() error {
 		noBlacklist = flag.Bool("no_blacklist", false, "Use fragmentation for all domains")
 		quiet       = flag.Bool("quiet", false, "Remove UI output")
 		verbose     = flag.Bool("verbose", false, "Show more info (only for devs)")
-		// install     = flag.Bool("install", false, "Add proxy to Windows autostart")
-		// uninstall   = flag.Bool("uninstall", false, "Remove proxy from Windows autostart")
 	)
 	flag.Parse()
-
-	// logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-	// 	Level: slog.LevelInfo,
-	// }))
 
 	logger := setupPrettySlog()
 
@@ -268,28 +262,9 @@ func Run() error {
 		WithQuiet(*quiet).
 		WithVerbose(*verbose)
 
-	// if err := proxy.setupLogging(); err != nil {
-	// 	return err
-	// }
-
 	if err := proxy.loadBlacklist(); err != nil {
 		return err
 	}
-
-	// if *install || *uninstall {
-	// 	if !isExecutable() {
-	// 		proxy.print("\033[91m[ERROR]: Autostart works only in EXE version\033[0m")
-	// 		return fmt.Errorf("autostart works only in EXE version")
-	// 	}
-	// 	action := "install"
-	// 	if *uninstall {
-	// 		action = "uninstall"
-	// 	}
-	// 	if err := proxy.manageAutostart(action); err != nil {
-	// 		return err
-	// 	}
-	// 	return nil
-	// }
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
