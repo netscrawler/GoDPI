@@ -19,8 +19,8 @@ import (
 	"sync"
 	"time"
 
-	"dpi/internal/conn"
-	prettylog "dpi/internal/pkg/log"
+	"github.com/netscrawler/godpi/internal/conn"
+	prettylog "github.com/netscrawler/godpi/internal/pkg/log"
 )
 
 type ProxyServer struct {
