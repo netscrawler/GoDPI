@@ -13,19 +13,21 @@ RUN go mod download
 # Копируем весь исходный код
 COPY . .
 
-# Создаем папку target
-RUN mkdir -p target
+RUN CGO_ENABLED=0 go build \
+    -trimpath \
+    -ldflags="-s -w -buildid= -extldflags=-static" \
+    -buildvcs=false \
+    -o godpi ./cmd/dpi/main.go
 
-# Компилируем бинарники для разных систем
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o target/GoDPI-linux ./cmd/dpi/main.go
-RUN CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o target/GoDPI-windows.exe ./cmd/dpi/main.go
-RUN CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o target/GoDPI-darwin ./cmd/dpi/main.go
+FROM gcr.io/distroless/static-debian12
 
-# Финальный этап
-FROM alpine:latest
+WORKDIR /godpi
 
-# Копируем папку target из стадии builder
-COPY --from=builder /app/target /target
+COPY --from=builder /app/godpi .
 
-# Указываем фиктивную команду, чтобы docker create работал
-CMD ["sh"]
+COPY --from=builder /app/blacklist.txt .
+
+EXPOSE 8881
+
+CMD ["./godpi"]
+
